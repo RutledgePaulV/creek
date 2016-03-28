@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.github.rutledgepaulv</groupId>
+        <artifactId>maven</artifactId>
+        <version>1.1</version>
+    </parent>
+
+    <artifactId>creek</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <name>creek</name>
+    <url>https://github.com/rutledgepaulv/creek</url>
+    <description>A library of heap-efficient stream splitters / demuxers for InputStream and OutputStream.</description>
+
+    <scm>
+        <url>https://github.com/rutledgepaulv/creek</url>
+        <connection>scm:git:git@github.com:rutledgepaulv/creek.git</connection>
+    </scm>
+
+    <ciManagement>
+        <system>travis</system>
+        <url>https://travis-ci.org/rutledgepaulv/creek</url>
+    </ciManagement>
+
+    <issueManagement>
+        <system>github</system>
+        <url>https://github.com/rutledgepaulv/creek/issues</url>
+    </issueManagement>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>
+    </dependencies>
+
+
+</project>
