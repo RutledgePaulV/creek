@@ -20,6 +20,12 @@ take a single source signal and split it into many. Where the benefit comes from
 of each split stream to the source stream. The internals of each demux use different strategies
 to keep the total heap memory footprint low while still allowing multiple readers to make progress.
 
+
+#### TempFileStreamDemux
+This demux just writes the stream to a temporary file (on disk) which can then be used
+to generate multiple handles to the same data. The temporary file is deleted once each
+reader has been closed. 
+
 #### FollowTheLeaderStreamDemux
 This demux maintains a buffer that contains only the bytes between the furthest-along
 reader and the furthest-behind reader of all the streams split from the demux. This means
@@ -27,10 +33,43 @@ that if you can read from each stream concurrently at about the same rate that t
 will remain very small. The underlying source stream will close and the buffer will empty
 once every split stream has been closed.
 
+
+## Usage
+<br/>
+
 #### TempFileStreamDemux
-This demux just writes the stream to a temporary file (on disk) which can then be used
-to generate multiple handles to the same data. The temporary file is deleted once each
-reader has been closed. 
+```java
+Supplier<InputStream> demux = new TempFileStreamDemux(request.getInputStream());
+
+InputStream stream1 = plex.get();
+InputStream stream2 = plex.get();
+InputStream stream3 = plex.get();
+
+MimeType mime = detectMimeType(stream1);
+String text = extractTextualContent(stream2);
+persistStream(stream3);
+```
+
+
+
+#### FollowTheLeaderStreamDemux
+```java
+Supplier<InputStream> demux = new FollowTheLeaderStreamDemux(request.getInputStream());
+
+InputStream stream1 = plex.get();
+InputStream stream2 = plex.get();
+InputStream stream3 = plex.get();
+
+CompletableFuture<?> future1 = spawnDetectMimetypeThread(stream1);
+CompletableFuture<?> future2 = spawnExtractTextualContentThread(stream2);
+CompletableFuture<?> future3 = spawnPersistThread(stream3);
+
+CompletableFuture<Void> afterAll = CompletableFuture.allOf(future1, future2, future3);
+
+// wait for each future to finish (or maintain your asynchronous
+// context until the last moment like a good reactive dev)
+afterAll.get();
+```
 
 
 #### Release Versions
