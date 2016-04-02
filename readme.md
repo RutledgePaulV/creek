@@ -41,10 +41,11 @@ once every split stream has been closed.
 ```java
 Supplier<InputStream> demux = new TempFileStreamDemux(request.getInputStream());
 
-InputStream stream1 = plex.get();
-InputStream stream2 = plex.get();
-InputStream stream3 = plex.get();
+InputStream stream1 = demux.get();
+InputStream stream2 = demux.get();
+InputStream stream3 = demux.get();
 
+// each of these should close the stream when done using it
 MimeType mime = detectMimeType(stream1);
 String text = extractTextualContent(stream2);
 persistStream(stream3);
@@ -56,10 +57,11 @@ persistStream(stream3);
 ```java
 Supplier<InputStream> demux = new FollowTheLeaderStreamDemux(request.getInputStream());
 
-InputStream stream1 = plex.get();
-InputStream stream2 = plex.get();
-InputStream stream3 = plex.get();
+InputStream stream1 = demux.get();
+InputStream stream2 = demux.get();
+InputStream stream3 = demux.get();
 
+// each of these should close the stream when done using it
 CompletableFuture<?> future1 = spawnDetectMimetypeThread(stream1);
 CompletableFuture<?> future2 = spawnExtractTextualContentThread(stream2);
 CompletableFuture<?> future3 = spawnPersistThread(stream3);
