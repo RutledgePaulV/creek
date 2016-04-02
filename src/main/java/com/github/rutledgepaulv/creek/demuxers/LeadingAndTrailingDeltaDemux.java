@@ -26,8 +26,8 @@ public class LeadingAndTrailingDeltaDemux extends AbstractInputStreamDemux<Input
 
     private static final int MIN_BUF = 4096;
     private final List<Integer> readPositions = new ArrayList<>();
-    private int[] buffer = new int[MIN_BUF];
-    private int writePosition = 0;
+    private volatile int[] buffer = new int[MIN_BUF];
+    private volatile int writePosition = 0;
 
     public LeadingAndTrailingDeltaDemux(InputStream source) {
         super(source);
@@ -99,10 +99,11 @@ public class LeadingAndTrailingDeltaDemux extends AbstractInputStreamDemux<Input
 
         // time to fetch more data
         if (nextPositionToRead >= writePosition) {
-            prepareBufferForMoreReadingFromSource();
-
-            // read another byte from the origin into the buffer
-            buffer[writePosition++] = getSource().read();
+            synchronized (this) {
+                prepareBufferForMoreReadingFromSource();
+                // read another byte from the origin into the buffer
+                buffer[writePosition++] = getSource().read();
+            }
         }
 
         int b = buffer[nextPositionToRead];
