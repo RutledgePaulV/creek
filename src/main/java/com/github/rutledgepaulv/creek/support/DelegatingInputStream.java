@@ -1,12 +1,17 @@
-package com.github.rutledgepaulv.creek.demuxers;
+package com.github.rutledgepaulv.creek.support;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-@SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
+/**
+ * An implementation of an input stream that simply proxies
+ * every call through to another input stream. Used to maintain
+ * the behavior of some original stream while aspecting various
+ * methods with custom functionality.
+ */
 public class DelegatingInputStream extends InputStream {
 
-    private InputStream delegate;
+    private final InputStream delegate;
 
     public DelegatingInputStream(InputStream stream) {
         this.delegate = stream;

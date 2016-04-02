@@ -8,7 +8,7 @@ import java.io.*;
 
 import static org.junit.Assert.*;
 
-public class TempFileStreamMultiplexerTest {
+public class TempFileDemuxTest {
 
 
     @Test
@@ -16,7 +16,7 @@ public class TempFileStreamMultiplexerTest {
 
         String streamContent = "Testing";
 
-        TempFileStreamDemux plex = multiplexer(IOUtils.toInputStream(streamContent));
+        TempFileDemux plex = multiplexer(IOUtils.toInputStream(streamContent));
 
         File temporary = getTemporaryFile(plex);
 
@@ -69,12 +69,12 @@ public class TempFileStreamMultiplexerTest {
         }
     }
 
-    private static TempFileStreamDemux multiplexer(InputStream stream) {
-        return new TempFileStreamDemux(stream);
+    private static TempFileDemux multiplexer(InputStream stream) {
+        return new TempFileDemux(stream);
     }
 
 
-    private static File getTemporaryFile(TempFileStreamDemux demux) {
+    private static File getTemporaryFile(TempFileDemux demux) {
         return (File) Whitebox.getInternalState(demux, "output");
     }
 }

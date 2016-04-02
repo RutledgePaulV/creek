@@ -30,7 +30,7 @@ This demux just writes the stream to a temporary file (on disk) which can then b
 to generate multiple handles to the same data. The temporary file is deleted once each
 reader has been closed. 
 
-#### FollowTheLeaderStreamDemux
+#### LeadingAndTrailingDeltaDemux
 This demux maintains a buffer that contains only the bytes between the furthest-along
 reader and the furthest-behind reader of all the streams split from the demux. This means
 that if you can read from each stream concurrently at about the same rate that the buffer
@@ -57,9 +57,9 @@ persistStream(stream3);
 
 
 
-#### FollowTheLeaderStreamDemux
+#### LeadingAndTrailingDeltaDemux
 ```java
-Supplier<InputStream> demux = new FollowTheLeaderStreamDemux(request.getInputStream());
+Supplier<InputStream> demux = new LeadingAndTrailingDeltaDemux(request.getInputStream());
 
 InputStream stream1 = demux.get();
 InputStream stream2 = demux.get();
