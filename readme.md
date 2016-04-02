@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.org/RutledgePaulV/creek.svg?branch=develop)](https://travis-ci.org/RutledgePaulV/creek)
+[![Coverage Status](https://coveralls.io/repos/github/RutledgePaulV/creek/badge.svg?branch=develop)](https://coveralls.io/github/RutledgePaulV/creek?branch=develop)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.rutledgepaulv/creek/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.rutledgepaulv/creek)
+
 # Creek
 
 Creek is a library for working with Java byte streams (InputStream, OutputStream). I created
@@ -80,7 +84,7 @@ afterAll.get();
     <dependency>
         <groupId>com.github.rutledgepaulv</groupId>
         <artifactId>creek</artifactId>
-        <version>?</version>
+        <version>0.5</version>
     </dependency>
 </dependencies>
 ```
@@ -91,7 +95,7 @@ afterAll.get();
     <dependency>
         <groupId>com.github.rutledgepaulv</groupId>
         <artifactId>creek</artifactId>
-        <version>?</version>
+        <version>0.6-SNAPSHOT</version>
     </dependency>
 </dependencies>
 
