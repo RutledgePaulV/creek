@@ -4,10 +4,10 @@
 
 # Creek
 
-Creek is a library for working with Java byte streams (InputStream, OutputStream). I created
-it because I often found myself in situations where I wanted to be efficient about memory
-usage and yet have several different readers that need access to the request stream in a web
-request (which, by default, is only traversable once). 
+Creek is a library for working with Java InputStreams. I created it because I often found myself 
+in situations where I wanted to be efficient about memory usage and yet have several different 
+readers that need access to the request stream in a web request (which, by default, is only 
+traversable once). 
 
 Most articles and stackoverflow answers you see on how to re-use a request stream just blindly
 tell users to wrap it in a BufferedInputStream or just call "toByteArray". Depending on your
@@ -25,7 +25,7 @@ of each split stream to the source stream. The internals of each demux use diffe
 to keep the total heap memory footprint low while still allowing multiple readers to make progress.
 
 
-#### TempFileStreamDemux
+#### TempFileDemux
 This demux just writes the stream to a temporary file (on disk) which can then be used
 to generate multiple handles to the same data. The temporary file is deleted once each
 reader has been closed. 
@@ -41,9 +41,9 @@ once every split stream has been closed.
 ## Usage
 <br/>
 
-#### TempFileStreamDemux
+#### TempFileDemux
 ```java
-Supplier<InputStream> demux = new TempFileStreamDemux(request.getInputStream());
+Supplier<InputStream> demux = new TempFileDemux(request.getInputStream());
 
 InputStream stream1 = demux.get();
 InputStream stream2 = demux.get();
