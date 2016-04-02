@@ -38,6 +38,12 @@ public class FollowTheLeaderStreamDemux extends AbstractDemux {
         readPositions.add(0);
         return new InputStream() {
             private final int id = readPositions.size() - 1;
+
+            @Override
+            public boolean markSupported() {
+                return false;
+            }
+
             @Override
             public int read() throws IOException {
                 return FollowTheLeaderStreamDemux.this.read(id);
