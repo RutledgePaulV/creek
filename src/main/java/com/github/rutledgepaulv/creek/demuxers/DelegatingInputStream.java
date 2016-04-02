@@ -29,7 +29,7 @@ public class DelegatingInputStream extends InputStream {
 
     @Override
     public int read() throws IOException {
-        return 0;
+        return delegate.read();
     }
 
     @Override

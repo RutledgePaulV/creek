@@ -37,10 +37,8 @@ public class FollowTheLeaderStreamMultiplexerTest {
         return IOUtils.toString(stream, "UTF-8");
     }
 
-    private static Supplier<InputStream> multiplexer(InputStream stream) {
+    private static FollowTheLeaderStreamDemux multiplexer(InputStream stream) {
         return new FollowTheLeaderStreamDemux(stream);
     }
-
-
 
 }

@@ -4,7 +4,6 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.util.Objects;
-import java.util.UUID;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class TempFileStreamDemux extends AbstractDemux {
@@ -18,7 +17,7 @@ public class TempFileStreamDemux extends AbstractDemux {
 
     private void setupTemporaryFile() {
         try {
-            output = File.createTempFile(UUID.randomUUID().toString(), UUID.randomUUID().toString());
+            output = File.createTempFile(getClass().getSimpleName(),".data");
             output.deleteOnExit();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -58,10 +57,7 @@ public class TempFileStreamDemux extends AbstractDemux {
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
-        if(Objects.nonNull(output)) {
-            output.delete();
-            output = null;
-        }
+        onLastClosed();
     }
 
 }

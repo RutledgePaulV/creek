@@ -4,13 +4,14 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 abstract class AbstractDemux implements Supplier<InputStream> {
 
-    private int numberOfClosedReaders;
-    private int numberOfOnceActiveReaders;
-    private int numberOfSpawnedReaders;
+    private volatile int numberOfClosedReaders;
+    private volatile int numberOfOnceActiveReaders;
+    private volatile int numberOfSpawnedReaders;
     private final InputStream source;
 
     protected AbstractDemux(InputStream source) {
@@ -37,14 +38,14 @@ abstract class AbstractDemux implements Supplier<InputStream> {
         return getNumberOfSpawnedReaders() == getNumberOfClosedReaders();
     }
 
-    private void markFollowerBecameActive() {
+    private synchronized void markFollowerBecameActive() {
         numberOfOnceActiveReaders++;
         if(getNumberOfOnceActiveReaders() == 1) {
             onFirstActiveInternal();
         }
     }
 
-    private void markFollowerWasClosed() {
+    private synchronized void markFollowerWasClosed() {
         numberOfClosedReaders++;
         if(haveAllSpawnedReadersBeenClosed()) {
             onLastClosedInternal();
@@ -54,9 +55,9 @@ abstract class AbstractDemux implements Supplier<InputStream> {
 
 
     @Override
-    public InputStream get() {
+    public synchronized InputStream get() {
 
-        if(numberOfOnceActiveReaders > 0 || numberOfClosedReaders > 0) {
+        if(getNumberOfOnceActiveReaders() > 0) {
             String message = "You cannot get another handle to the stream once the source is being consumed.";
             throw new IllegalStateException(message);
         }
@@ -66,41 +67,44 @@ abstract class AbstractDemux implements Supplier<InputStream> {
 
         return new DelegatingInputStream(spawn) {
 
-            private boolean haveReportedActiveStatus = false;
-            private boolean haveReportedClosedStatus = false;
+            private AtomicBoolean haveReportedActiveStatus = new AtomicBoolean(false);
+            private AtomicBoolean haveReportedClosedStatus = new AtomicBoolean(false);
 
             @Override
             public int read(byte[] b) throws IOException {
-                if(!haveReportedActiveStatus) {
-                    markFollowerBecameActive();
-                }
+                onRead();
                 return super.read(b);
             }
 
             @Override
             public int read(byte[] b, int off, int len) throws IOException {
-                if(!haveReportedActiveStatus) {
-                    markFollowerBecameActive();
-                }
+                onRead();
                 return super.read(b, off, len);
             }
 
             @Override
             public int read() throws IOException {
-                if(!haveReportedActiveStatus) {
-                    markFollowerBecameActive();
-                }
+                onRead();
                 return super.read();
             }
 
             @Override
             public void close() throws IOException {
                 super.close();
-                if(!haveReportedClosedStatus) {
-                    markFollowerWasClosed();
+                onClose();
+            }
+
+            private void onRead() {
+                if(haveReportedActiveStatus.compareAndSet(false, true)) {
+                    markFollowerBecameActive();
                 }
             }
 
+            private void onClose() {
+                if(haveReportedClosedStatus.compareAndSet(false, true)) {
+                    markFollowerWasClosed();
+                }
+            }
         };
 
     }
