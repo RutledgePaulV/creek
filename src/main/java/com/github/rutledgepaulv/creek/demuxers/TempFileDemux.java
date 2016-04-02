@@ -17,7 +17,7 @@ import static java.io.File.createTempFile;
  * disk space on the machine.
  *
  */
-public class TempFileDemux extends AbstractInputStreamDemux {
+public class TempFileDemux extends AbstractInputStreamDemux<FileInputStream> {
 
     private final File output;
 
@@ -32,7 +32,7 @@ public class TempFileDemux extends AbstractInputStreamDemux {
     }
 
     @Override
-    protected InputStream getNewHandle() {
+    protected FileInputStream getNewHandle() {
         try {
             return new FileInputStream(output);
         } catch (FileNotFoundException e) {
@@ -41,7 +41,7 @@ public class TempFileDemux extends AbstractInputStreamDemux {
     }
 
     @Override
-    protected void onFirstHandleActivated(InputStream inputStream) {
+    protected void onFirstHandleActivated(FileInputStream inputStream) {
         try (FileOutputStream outputStream = new FileOutputStream(output)) {
             IOUtils.copy(getSource(), outputStream);
         } catch (IOException e) {
@@ -52,7 +52,7 @@ public class TempFileDemux extends AbstractInputStreamDemux {
     }
 
     @Override
-    protected void onLastHandleClosed(InputStream inputStream) {
+    protected void onLastHandleClosed(FileInputStream inputStream) {
         //noinspection ResultOfMethodCallIgnored
         output.delete();
     }
