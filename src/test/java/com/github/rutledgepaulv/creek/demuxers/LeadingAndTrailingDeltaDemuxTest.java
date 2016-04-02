@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 
 import static org.junit.Assert.assertEquals;
 
-public class FollowTheLeaderStreamMultiplexerTest {
+public class LeadingAndTrailingDeltaDemuxTest {
 
 
     @Test
@@ -37,8 +37,8 @@ public class FollowTheLeaderStreamMultiplexerTest {
         return IOUtils.toString(stream, "UTF-8");
     }
 
-    private static FollowTheLeaderStreamDemux multiplexer(InputStream stream) {
-        return new FollowTheLeaderStreamDemux(stream);
+    private static LeadingAndTrailingDeltaDemux multiplexer(InputStream stream) {
+        return new LeadingAndTrailingDeltaDemux(stream);
     }
 
 }

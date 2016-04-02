@@ -7,7 +7,7 @@ import java.util.*;
 /**
  * An input stream demultiplexer that maintains only the delta
  * between the furthest along "leading" reader of a stream
- * and the furthest behind "following" reader of a stream.
+ * and the furthest behind "trailing" reader of a stream.
  *
  * It's intended for usage when you have several readers that
  * each need to read through the stream but you don't want to
@@ -22,14 +22,14 @@ import java.util.*;
  * find memory usage is very low. The greater the disparity in speed you'll see a larger
  * buffer get built up.
  */
-public class FollowTheLeaderStreamDemux extends AbstractDemux {
+public class LeadingAndTrailingDeltaDemux extends AbstractInputStreamDemux<InputStream> {
 
-    private static int MIN_BUF = 4096;
+    private static final int MIN_BUF = 4096;
     private final List<Integer> readPositions = new ArrayList<>();
-    private int[] buffer = new int[MIN_BUF];
-    private int writePosition = 0;
+    private volatile int[] buffer = new int[MIN_BUF];
+    private volatile int writePosition = 0;
 
-    public FollowTheLeaderStreamDemux(InputStream source) {
+    public LeadingAndTrailingDeltaDemux(InputStream source) {
         super(source);
     }
 
@@ -46,7 +46,7 @@ public class FollowTheLeaderStreamDemux extends AbstractDemux {
 
             @Override
             public int read() throws IOException {
-                return FollowTheLeaderStreamDemux.this.read(id);
+                return LeadingAndTrailingDeltaDemux.this.read(id);
             }
         };
     }
@@ -99,10 +99,11 @@ public class FollowTheLeaderStreamDemux extends AbstractDemux {
 
         // time to fetch more data
         if (nextPositionToRead >= writePosition) {
-            prepareBufferForMoreReadingFromSource();
-
-            // read another byte from the origin into the buffer
-            buffer[writePosition++] = getSource().read();
+            synchronized (this) {
+                prepareBufferForMoreReadingFromSource();
+                // read another byte from the origin into the buffer
+                buffer[writePosition++] = getSource().read();
+            }
         }
 
         int b = buffer[nextPositionToRead];
@@ -116,8 +117,8 @@ public class FollowTheLeaderStreamDemux extends AbstractDemux {
 
 
     @Override
-    protected void onLastClosed() {
-        this.buffer = new int[0];
+    protected void onLastHandleClosed(InputStream inputStream) {
+        this.buffer = null;
         this.readPositions.clear();
     }
 
