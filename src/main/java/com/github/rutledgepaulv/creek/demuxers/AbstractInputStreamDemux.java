@@ -65,14 +65,18 @@ public abstract class AbstractInputStreamDemux<HANDLE_KIND extends InputStream> 
     }
 
 
-
-    @Override
-    public synchronized InputStream get() {
-
+    private void checkAllowedToSpawn() {
         if(getNumberOfOnceActiveReaders() > 0) {
             String message = "You cannot get another handle to the stream once the source is being consumed.";
             throw new UnsupportedOperationException(message);
         }
+    }
+
+
+    @Override
+    public synchronized final InputStream get() {
+
+        checkAllowedToSpawn();
 
         final HANDLE_KIND spawn = getNewHandle();
         numberOfSpawnedReaders++;
