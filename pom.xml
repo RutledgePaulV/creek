@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>creek</artifactId>
-    <version>0.5-SNAPSHOT</version>
+    <version>0.5</version>
 
     <name>creek</name>
     <url>https://github.com/rutledgepaulv/creek</url>
