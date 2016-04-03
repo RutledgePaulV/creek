@@ -10,7 +10,7 @@ readers that need access to the request stream in a web request (which, by defau
 traversable once). 
 
 Most articles and stackoverflow answers you see on how to re-use a request stream just blindly
-tell users to wrap it in a BufferedInputStream or just call "toByteArray". Depending on your
+tell users to wrap it in a ByteArrayInputStream or just call "toByteArray". Depending on your
 application this can be a pretty dangerous thing to do. Imagine you're letting a user upload
 videos through your application and they just uploaded a 2GB file. You now need 2GB in your
 heap just to support that one user if you use either of the often suggested approaches.
