@@ -127,16 +127,6 @@ public abstract class AbstractInputStreamDemux<HANDLE_KIND extends InputStream> 
     }
 
 
-    @Override
-    protected void finalize() throws Throwable {
-        try {
-            super.finalize();
-        } finally {
-            IOUtils.closeQuietly(source);
-        }
-    }
-
-
     /**
      * @return a new input stream handle that can be used to read the
      *         entire contents of the source stream eventually. The
